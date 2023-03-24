@@ -25,29 +25,32 @@ contract FlameAirdrop is Ownable, Pausable {
         _claim(_msgSender());
     }
 
-    function addAirdrop(address account,uint256 amount) public onlyOwner {
-        _setAirdrop(account,airMap[account].airdropAmount+amount);
+    function addAirdrop(address account, uint256 amount) public onlyOwner {
+        _setAirdrop(account, airMap[account].airdropAmount + amount);
     }
 
-    function setAirdrop(address account,uint256 amount) public onlyOwner {
-        _setAirdrop(account,amount);
+    function setAirdrop(address account, uint256 amount) public onlyOwner {
+        _setAirdrop(account, amount);
     }
 
-    function getAirdropInfo(address account) public view returns (AirdropInfo memory) {
+    function getAirdropInfo(
+        address account
+    ) public view returns (AirdropInfo memory) {
         return airMap[account];
     }
 
     function _setAirdrop(address account, uint256 amount) internal {
-        require(amount>airMap[account].claimedAmount, "invalid amount");
+        require(amount > airMap[account].claimedAmount, "invalid amount");
         airMap[account].airdropAmount = amount;
         emit AirdropInfoChanged(account, amount);
     }
 
     function _claim(address account) internal {
-        uint256 amount = airMap[account].airdropAmount - airMap[account].claimedAmount;
+        uint256 amount = airMap[account].airdropAmount -
+            airMap[account].claimedAmount;
         airMap[account].claimedAmount = airMap[account].airdropAmount;
-        require(flameToken.transfer(account, amount),"transfer failed");
-        emit AirdropClaimed(account,amount);
+        require(flameToken.transfer(account, amount), "transfer failed");
+        emit AirdropClaimed(account, amount);
     }
 
     event AirdropInfoChanged(address account, uint256 total);

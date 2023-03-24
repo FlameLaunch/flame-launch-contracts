@@ -25,7 +25,7 @@ contract FlameToken is ERC20, Ownable {
     mapping(address => FlameLocker) private lockMap;
 
     constructor() ERC20("Flame Launch Token", "FLT") {
-        UPLINE_AT = block.timestamp+15 days;
+        UPLINE_AT = block.timestamp + 15 days;
         address tech = 0x5E75662eCcC9c3E3B18A0F357Fd381ef92ad5a02;
         address ecology = 0xBEFe05a040d2De72B7e05a9D16F19f13D2618169;
         address airdrop1 = 0xac2a152F5b48fB7A6810dD1DB711202d1774d2Be;
@@ -65,7 +65,7 @@ contract FlameToken is ERC20, Ownable {
             for (uint256 i = 0; i < transform.length; i++) {
                 spend += transform[i];
             }
-            require(spend>0,"spend zero allowance");
+            require(spend > 0, "spend zero allowance");
             _spendAllowance(from, operator, spend);
         }
         _safeTransferLock(from, to, transform);
@@ -148,7 +148,7 @@ contract FlameToken is ERC20, Ownable {
         amount += _claimingOf(Release334For2Month, flamelock);
         amount += _claimingOf(Release1For10Month, flamelock);
         amount += _claimingOf(ReleaseAllAfter1Year, flamelock);
-        require(amount>0,"no token can claim");
+        require(amount > 0, "no token can claim");
         _totalLock -= amount;
         _mint(_msgSender(), amount);
         //console.log('%f',amount);
@@ -270,7 +270,10 @@ contract FlameToken is ERC20, Ownable {
     }
 
     function _setUplineTime(uint256 at) internal {
-        require(at>block.timestamp&&block.timestamp<UPLINE_AT,"invalid time");
+        require(
+            at > block.timestamp && block.timestamp < UPLINE_AT,
+            "invalid time"
+        );
         emit UplineTimeChanged(at);
     }
 

@@ -19,7 +19,7 @@ contract FlameStake is Ownable, Pausable, ReentrancyGuard {
         uint256 stakeAmount;
     }
 
-    constructor() { 
+    constructor() {
         STAKE_LOCK_TIME = 15 days;
         STAKE_AMOUNT_PER_SHARE = 30 * (10 ** 18);
     }
@@ -28,14 +28,14 @@ contract FlameStake is Ownable, Pausable, ReentrancyGuard {
         address operator = _msgSender();
         uint256 filAmount = msg.value;
         require(stakeMap[operator].stakeAt == 0, "you have mint already");
-        require(filAmount==STAKE_AMOUNT_PER_SHARE,"invalid fil value");
+        require(filAmount == STAKE_AMOUNT_PER_SHARE, "invalid fil value");
 
         stakeMap[operator].stakeAmount += STAKE_AMOUNT_PER_SHARE;
         stakeMap[operator].stakeAt = block.timestamp;
         emit Staking(operator, STAKE_AMOUNT_PER_SHARE);
     }
 
-    function unstake() public whenNotPaused nonReentrant  {
+    function unstake() public whenNotPaused nonReentrant {
         address operator = _msgSender();
         uint256 filAmount = stakeMap[operator].stakeAmount;
         require(filAmount > 0, "no stake value");
