@@ -8,11 +8,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./Flame.sol";
 
-contract FlameIdo is ERC721, Ownable, Pausable,ReentrancyGuard {
+contract FlameIdo is ERC721, Ownable, Pausable, ReentrancyGuard {
     using Counters for Counters.Counter;
 
     uint256 public constant MAX_AMOUNT = 5000;
-    uint256 public constant MINT_THRESHOLD = 5000 * 1e18;
+    uint256 public MINT_THRESHOLD = 5000 * 1e18;
     Counters.Counter private _tokenIdCounter;
     string private uri;
 
@@ -29,11 +29,11 @@ contract FlameIdo is ERC721, Ownable, Pausable,ReentrancyGuard {
         string memory _uri,
         string memory _name,
         string memory _symbol
-    ) ERC721(_name,_symbol) {
+    ) ERC721(_name, _symbol) {
         flameToken = _token;
         treasury = _trea;
         idoTreasury = _idotrea;
-        _setPrice(uint256(1e18) / 150);
+        _setPrice(uint256(1e18) / 150, 5000 * 1e18);
         uri = _uri;
     }
 
@@ -42,7 +42,11 @@ contract FlameIdo is ERC721, Ownable, Pausable,ReentrancyGuard {
         require(success, "Transfer: transfer fil failed");
     }
 
-    function buy(address to) payable public whenNotPaused nonReentrant {
+    fallback() external payable {
+        revert("Direct transfers not allowed.");
+    }
+
+    function buy(address to) public payable whenNotPaused nonReentrant {
         uint256 filAmount = msg.value;
         uint256 share = (filAmount * 1e18) / pricePerShare;
         flameToken.transferLock(idoTreasury, to, [0, 0, share, 0, 0]);
@@ -50,7 +54,7 @@ contract FlameIdo is ERC721, Ownable, Pausable,ReentrancyGuard {
         emit IdoSale(to, pricePerShare, share);
     }
 
-    function mint() public whenNotPaused nonReentrant{
+    function mint() public whenNotPaused nonReentrant {
         address operator = _msgSender();
         require(balanceOf(operator) == 0, "you have mint already");
         require(hadBought(operator) > MINT_THRESHOLD, "you can't mint");
@@ -60,8 +64,8 @@ contract FlameIdo is ERC721, Ownable, Pausable,ReentrancyGuard {
         _safeMint(operator, tokenId);
     }
 
-    function setPrice(uint256 price) public onlyOwner {
-        _setPrice(price);
+    function setPrice(uint256 price, uint256 threshold) public onlyOwner {
+        _setPrice(price, threshold);
     }
 
     function setPause(bool p) public onlyOwner {
@@ -88,11 +92,12 @@ contract FlameIdo is ERC721, Ownable, Pausable,ReentrancyGuard {
         revert("SBT can't transfer");
     }
 
-    function _setPrice(uint256 price) private {
+    function _setPrice(uint256 price, uint256 threshold) private {
         pricePerShare = price;
-        emit PriceChanged(price);
+        MINT_THRESHOLD = threshold;
+        emit PriceChanged(price, threshold);
     }
 
     event IdoSale(address to, uint256 price, uint256 share);
-    event PriceChanged(uint256 price);
+    event PriceChanged(uint256 price, uint256 threshold);
 }

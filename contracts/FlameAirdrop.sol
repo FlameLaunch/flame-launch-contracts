@@ -46,7 +46,7 @@ contract FlameAirdrop is Ownable, Pausable {
     function _claim(address account) internal {
         uint256 amount = airMap[account].airdropAmount - airMap[account].claimedAmount;
         airMap[account].claimedAmount = airMap[account].airdropAmount;
-        flameToken.transfer(account, amount);
+        require(flameToken.transfer(account, amount),"transfer failed");
         emit AirdropClaimed(account,amount);
     }
 

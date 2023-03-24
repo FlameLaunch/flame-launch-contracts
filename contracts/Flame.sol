@@ -148,7 +148,7 @@ contract FlameToken is ERC20, Ownable {
         amount += _claimingOf(Release334For2Month, flamelock);
         amount += _claimingOf(Release1For10Month, flamelock);
         amount += _claimingOf(ReleaseAllAfter1Year, flamelock);
-        // require(amount>0,"no token can claim");
+        require(amount>0,"no token can claim");
         _totalLock -= amount;
         _mint(_msgSender(), amount);
         //console.log('%f',amount);
@@ -192,7 +192,7 @@ contract FlameToken is ERC20, Ownable {
             } else if (ltype == Release334For2Month) {
                 if (block.timestamp >= UPLINE_AT) {
                     uint256 era = (block.timestamp - UPLINE_AT) / (30 days);
-                    uint8[3] memory map = [3, 3, 4];
+                    uint8[3] memory map = [3, 6, 10];
                     uint256 rate = map[era.min(map.length - 1)];
                     released = (locker.lock * rate) / 10;
                     claimable = released - locker.claimed;
