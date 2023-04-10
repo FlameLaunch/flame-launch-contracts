@@ -85,11 +85,11 @@ contract FlameIdo is ERC721, Ownable, Pausable, ReentrancyGuard {
     }
 
     function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override {
-        revert("SBT can't transfer");
+        address,
+        address,
+        uint256
+    ) internal override pure {
+        require(0==1,"SBT can't transfer");
     }
 
     function _setPrice(uint256 price, uint256 threshold) private {
