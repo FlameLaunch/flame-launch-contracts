@@ -274,6 +274,7 @@ contract FlameToken is ERC20, Ownable {
             at > block.timestamp && block.timestamp < UPLINE_AT,
             "invalid time"
         );
+        UPLINE_AT = at;
         emit UplineTimeChanged(at);
     }
 
